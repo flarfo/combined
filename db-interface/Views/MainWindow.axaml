@@ -1,0 +1,194 @@
+<Window
+    x:Class="ASTEM_DB.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:color="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:ASTEM_DB.ViewModels"
+    x:Name="rootWindow"
+    Title="ASTEM DB"
+    d:DesignHeight="700"
+    d:DesignWidth="1000"
+    x:DataType="vm:MainWindowViewModel"
+    Icon="/Assets/avalonia-logo.ico"
+    mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+    <Grid ColumnDefinitions="400,*,200" RowDefinitions="*">
+
+        <!--  Left Sidebar  -->
+        <Border
+            Grid.Column="0"
+            Background="#F0F0F0"
+            BorderBrush="#F0F0F0"
+            BorderThickness="0,0,1,0"
+            CornerRadius="0">
+            <TabControl Margin="10" SelectedIndex="0">
+                <TabItem
+                    FontSize="20"
+                    FontWeight="DemiBold"
+                    Header="Glaze Search">
+                    <ScrollViewer Margin="0,30,0,0" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10" Spacing="5">
+                            <color:ColorView
+                                Margin="0,-10,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                IsAlphaVisible="False"
+                                IsColorComponentsVisible="False"
+                                IsColorModelVisible="False"
+                                IsColorPaletteVisible="False"
+                                IsColorPreviewVisible="True"
+                                IsColorSpectrumVisible="True"
+                                IsComponentSliderVisible="False"
+                                Color="{Binding SelectedColor, Mode=TwoWay}" />
+
+                            <RadioButton
+                                Content="Filter using Spectrum"
+                                GroupName="ColorMode"
+                                IsChecked="{Binding FilterByColor}" />
+                            <RadioButton
+                                Content="Filter using Name"
+                                GroupName="ColorMode"
+                                IsChecked="{Binding FilterByString}" />
+                            <RadioButton Content="Don't Filter with Color" GroupName="ColorMode" />
+
+                            <TextBlock Margin="0,0,0,0" Text="Glaze Type" />
+                            <ComboBox ItemsSource="{Binding GlazeTypes}" SelectedItem="{Binding SelectedGlazeType, Mode=TwoWay}" />
+
+                            <TextBlock Margin="0,0,0,0" Text="Surface Condition" />
+                            <ComboBox ItemsSource="{Binding SurfaceConditions}" SelectedItem="{Binding SelectedSurfaceCondition, Mode=TwoWay}" />
+                            <TextBlock Margin="0,0,0,0" Text="Firing Atmosphere" />
+                            <ComboBox
+                                Width="150"
+                                ItemsSource="{Binding FiringTypes}"
+                                SelectedItem="{Binding SelectedFiringType, Mode=TwoWay}" />
+                            <TextBlock Margin="0,0,0,0" Text="Color Name" />
+                            <ComboBox ItemsSource="{Binding ColorPalettes}" SelectedItem="{Binding SelectedColorPalette, Mode=TwoWay}" />
+                            <Button
+                                Width="100"
+                                HorizontalAlignment="Right"
+                                Command="{Binding SearchCommand}"
+                                Content="Search" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </Border>
+
+        <!--  Main Content Area  -->
+        <Grid
+            Grid.Column="1"
+            Margin="20"
+            Background="#FFFFFF"
+            RowDefinitions="*,Auto">
+            <TextBlock IsVisible="{Binding IsFilterEmpty}" Text="NO GLAZES FOUND" />
+
+            <!--  Image Grid  -->
+            <ScrollViewer Margin="0,40,0,0" VerticalScrollBarVisibility="Auto">
+
+                <ItemsControl ItemsSource="{Binding CardItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button
+                                Width="150"
+                                Height="150"
+                                Margin="10,10,0,0"
+                                Background="#FFFFFF"
+                                Click="OnCardClicked">
+                                <Border
+                                    Width="150"
+                                    Height="150"
+                                    Margin="5"
+                                    BorderBrush="Gray"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <Image
+                                        Width="120"
+                                        Height="120"
+                                        Source="{Binding Image}" />
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+        </Grid>
+        <!--  Card Info Sidebar  -->
+        <Border
+            Grid.Column="2"
+            Margin="5"
+            Background="#F0F0F0"
+            BorderBrush="Gray"
+            BorderThickness="1"
+            CornerRadius="6"
+            IsVisible="{Binding IsSidebarVisible}">
+
+            <DockPanel Width="200">
+                <StackPanel
+                    Margin="10"
+                    HorizontalAlignment="Center"
+                    DockPanel.Dock="Top"
+                    Spacing="5">
+                    <Image
+                        Width="130"
+                        Height="130"
+                        Source="{Binding SelectedCard.Image}" />
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run FontWeight="DemiBold" TextDecorations="Underline" Text="Glaze Type"  />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding SelectedCard.GlazeType}" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run FontWeight="DemiBold" TextDecorations="Underline" Text="Firing Type" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding SelectedCard.FiringType}" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run FontWeight="DemiBold" TextDecorations="Underline" Text="Soil Type" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding SelectedCard.SoilType}" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run FontWeight="DemiBold" TextDecorations="Underline" Text="Surface Condition" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding SelectedCard.SurfaceCondition}" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run FontWeight="DemiBold" TextDecorations="Underline" Text="Chemical Composition" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding SelectedCard.ChemicalComposition}" />
+                    </TextBlock>
+
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run FontWeight="DemiBold" TextDecorations="Underline" Text="Color" />
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+                        <Run Text="{Binding SelectedCard.ColorName}" />
+                    </TextBlock>
+                    <!-- <TextBlock Text="{Binding SelectedCard.ImagePath}"/> -->
+                    <!-- <TextBlock Text="{Binding SelectedCard.Lab}" /> -->
+
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+    </Grid>
+
+</Window>
